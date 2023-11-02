@@ -44,8 +44,12 @@ pub fn bitpattern(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     let pattern = match pattern {
         TokenTree::Literal(x) => x.to_string(),
+        TokenTree::Group(group) => match group.stream().into_iter().next() {
+            Some(TokenTree::Literal(x)) => x.to_string(),
+            _ => panic!("1st argument must be string literal"),
+        },
         _ => {
-            panic!("1st argument must be string literal");
+            panic!("1st argument must be string literal, got: {:?}", pattern);
         }
     };
     let pattern = if pattern.starts_with('\"') & pattern.ends_with('\"') {
